@@ -11,7 +11,7 @@ public class Constants {
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.521;
 
     public static final double SWERVE_MAX_VOLTAGE = 12;
-    public static final double SWERVE_SPEED_MULTIPLIER = 100; //use to limit speed
+    public static final double SWERVE_SPEED_MULTIPLIER = 1; //use to limit speed
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 5.25; //Literally a measure of how fast the swerves could possibly go
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
             Math.hypot(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 4.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 4.0);
@@ -21,7 +21,7 @@ public class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 42;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 3;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(265+180);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(264);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 6;
@@ -36,7 +36,7 @@ public class Constants {
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 11;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 12;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(343);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(342);
 
     ///////////////////
     //SHOOTER CONSTANTS
@@ -55,7 +55,11 @@ public class Constants {
 
     public static final class TargetConstants{
 		public static final double[][] HOOD_ARRAY = {
-                {-15.1, 150},
+                {-18.1, 190},
+                {-17.4, 190},
+                {-16.1, 195},
+                {-15.6, 175},
+                {-15.1, 165},
                 {-14.9, 170},
                 {-14, 165},
                 {-12.5,180},
@@ -102,7 +106,11 @@ public class Constants {
             {-12.5,10600},
             {-14, 10658},
             {-14.9,10958},
-            {-15.1, 10758}
+            {-15.1, 11058},
+            {-15.6, 11200},
+            {-16.1, 11300},
+            {-17.4, 12000},
+            {-18.1, 12500}
             
 		};
 
@@ -128,7 +136,11 @@ public class Constants {
             {-12.5, 13800},
             {-14,14200 },
             {-14.9, 13785},
-            {-15.1, 13802}
+            {-15.1, 14102},
+            {-15.6, 14402},
+            {-16.1, 14900},
+            {-17.4, 14902},
+            {-18.1, 15100}
         };
 
 		public static final LinearInterpolator HOOD_INTERPOLATOR = new LinearInterpolator(HOOD_ARRAY);

@@ -14,9 +14,8 @@ public class DriveCommand extends CommandBase {
     //public final DoubleSupplier rotationXSupplier;
     //public final DoubleSupplier rotationYSupplier;
     private final BooleanSupplier robotCentric;
-    private BooleanSupplier lowPower;
-    public double drivePower;
-    public BooleanSupplier slowTurn;
+    public DoubleSupplier drivePower;
+    public DoubleSupplier TurnSpeed;
     public DoubleSupplier rotationSupplier;
 
     public DriveCommand(
@@ -25,16 +24,14 @@ public class DriveCommand extends CommandBase {
             DoubleSupplier translationYSupplier,
             DoubleSupplier rotationSupplier,
             BooleanSupplier robotCentric,
-            BooleanSupplier lowPower,
-            BooleanSupplier slowTurn
+            DoubleSupplier drivePower
     ) {
         this.drivetrain = drivetrain;
         this.translationXSupplier = translationXSupplier;
         this.translationYSupplier = translationYSupplier;
         this.rotationSupplier = rotationSupplier;
         this.robotCentric = robotCentric;
-        this.lowPower = lowPower;
-        this.slowTurn = slowTurn;
+        this.drivePower = drivePower;
         addRequirements(drivetrain);
     }
     @Override
@@ -42,26 +39,25 @@ public class DriveCommand extends CommandBase {
         double translationXPercent = translationXSupplier.getAsDouble();
         double translationYPercent = translationYSupplier.getAsDouble();
         double rotationPercent = rotationSupplier.getAsDouble();
-        if (this.lowPower.getAsBoolean()) {drivePower = 0.4;} 
+        double drivePower = this.drivePower.getAsDouble();
         if (robotCentric.getAsBoolean()) {
-            drivetrain.drive(
+            drivetrain.setSpeeds(
                 new ChassisSpeeds(
                         translationXPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
                         translationYPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-                        rotationPercent * (slowTurn.getAsBoolean() ? 0.4 : 1.0) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+                        rotationPercent * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
                     )
             );
         } else {
-            drivetrain.drive(
+            drivetrain.setSpeeds(
                     ChassisSpeeds.fromFieldRelativeSpeeds(
                             translationXPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
                             translationYPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-                            rotationPercent * (slowTurn.getAsBoolean() ? 0.4 : 1.0) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+                            rotationPercent * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
                             drivetrain.getRotation()
                 )
             );
         }
-        this.drivePower = 1.0;
     }
     //for special right joystick control
     /*@Override
@@ -95,6 +91,6 @@ public class DriveCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         // Stop the drivetrain
-        drivetrain.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+        drivetrain.setSpeeds(new ChassisSpeeds(0.0, 0.0, 0.0));
     }
 }
