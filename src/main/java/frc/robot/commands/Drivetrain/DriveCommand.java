@@ -2,8 +2,11 @@ package frc.robot.commands.Drivetrain;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDriveSubsystem;
+import frc.robot.subsystems.SwerveDriveSubsystem.MovementTrackingTypes;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -17,6 +20,7 @@ public class DriveCommand extends CommandBase {
     public DoubleSupplier drivePower;
     public DoubleSupplier TurnSpeed;
     public DoubleSupplier rotationSupplier;
+    public BooleanSupplier limelightTracking;
 
     public DriveCommand(
             SwerveDriveSubsystem drivetrain,
@@ -24,7 +28,8 @@ public class DriveCommand extends CommandBase {
             DoubleSupplier translationYSupplier,
             DoubleSupplier rotationSupplier,
             BooleanSupplier robotCentric,
-            DoubleSupplier drivePower
+            DoubleSupplier drivePower,
+            BooleanSupplier limelightTracking
     ) {
         this.drivetrain = drivetrain;
         this.translationXSupplier = translationXSupplier;
@@ -32,6 +37,7 @@ public class DriveCommand extends CommandBase {
         this.rotationSupplier = rotationSupplier;
         this.robotCentric = robotCentric;
         this.drivePower = drivePower;
+        this.limelightTracking = limelightTracking;
         addRequirements(drivetrain);
     }
     @Override
@@ -40,13 +46,13 @@ public class DriveCommand extends CommandBase {
         double translationYPercent = translationYSupplier.getAsDouble();
         double rotationPercent = rotationSupplier.getAsDouble();
         double drivePower = this.drivePower.getAsDouble();
+        boolean limelightTracking = this.limelightTracking.getAsBoolean();
+        drivetrain.limelightTarget(true, MovementTrackingTypes.robotSpeed);
         if (robotCentric.getAsBoolean()) {
             drivetrain.setSpeeds(
-                new ChassisSpeeds(
-                        translationXPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-                        translationYPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-                        rotationPercent * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-                    )
+                Optional.ofNullable(translationXPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND),
+                Optional.ofNullable(translationYPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND),
+                limelightTracking ? Optional.ofNullable(null) : Optional.ofNullable(rotationPercent * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
             );
         } else {
             drivetrain.setSpeeds(

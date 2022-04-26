@@ -45,7 +45,8 @@ public class RobotContainer {
                 () -> -modifyAxis(slewX.calculate(driverController.getLeftX())),
                 () -> -modifyAxis(driverController.getRightX()),
                 () -> driverController.getLeftBumper(), //RobotCentric
-                () -> (driverController.getRightBumper() ? 0.4 : 1.0) //lowPower
+                () -> (driverController.getRightBumper() ? 0.4 : 1.0), //lowPower
+                () -> driverController.getRightTriggerAxis() > 0.5
         ));
 
         new Button(driverController::getBButtonPressed)
