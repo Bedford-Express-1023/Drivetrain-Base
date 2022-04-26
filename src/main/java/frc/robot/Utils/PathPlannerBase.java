@@ -13,22 +13,26 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
 /** Add your docs here. */
 public class PathPlannerBase extends PPSwerveControllerCommand {
     public SwerveDriveSubsystem drivetrain;
+    public PathPlannerTrajectory trajectory;
 
     private PathPlannerBase(PathPlannerTrajectory trajectory, Supplier<Pose2d> pose, SwerveDriveKinematics kinematics,
             PIDController xController, PIDController yController, ProfiledPIDController thetaController,
             Consumer<SwerveModuleState[]> outputModuleStates, Subsystem[] requirements) {
         super(trajectory, pose, kinematics, xController, yController, thetaController, outputModuleStates, requirements);
     }
+
     public PathPlannerBase(SwerveDriveSubsystem drivetrain, PathPlannerTrajectory trajectory) {
         super(
             trajectory, 
@@ -42,6 +46,12 @@ public class PathPlannerBase extends PPSwerveControllerCommand {
             }, 
             drivetrain);
             this.drivetrain = drivetrain;
+            this.trajectory = trajectory;
+    }
+    
+    @Override
+    public void initialize() {
+        drivetrain.odometry.resetPosition(new Pose2d(trajectory.getInitialPose().getTranslation().plus(new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2, -Constants.DRIVETRAIN_WHEELBASE_METERS / 2)), trajectory.getInitialPose().getRotation()), drivetrain.getRotation());
     }
 
     @Override

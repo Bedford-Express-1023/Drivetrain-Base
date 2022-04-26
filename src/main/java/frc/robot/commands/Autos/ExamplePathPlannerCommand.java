@@ -6,7 +6,6 @@ package frc.robot.commands.Autos;
 
 import com.pathplanner.lib.PathPlanner;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Utils.PathPlannerBase;
@@ -19,9 +18,9 @@ public class ExamplePathPlannerCommand extends SequentialCommandGroup {
 /** Creates a new fiveBall. */
 
 public ExamplePathPlannerCommand(SwerveDriveSubsystem drivetrain) {
-  Command fourBall1 = new PathPlannerBase(drivetrain, PathPlanner.loadPath("4 ball 1", 3, 4));
-  Command fourBall2 = new PathPlannerBase(drivetrain, PathPlanner.loadPath("4 ball 2", 3, 4));
-  Command fourBall3 = new PathPlannerBase(drivetrain, PathPlanner.loadPath("4 ball 3", 3, 4));
+  PathPlannerBase fourBall1 = new PathPlannerBase(drivetrain, PathPlanner.loadPath("4 ball 1", 3, 4));
+  PathPlannerBase fourBall2 = new PathPlannerBase(drivetrain, PathPlanner.loadPath("4 ball 2", 3, 4));
+  PathPlannerBase fourBall3 = new PathPlannerBase(drivetrain, PathPlanner.loadPath("4 ball 3", 3, 4));
 
   addCommands(
     fourBall1.deadlineWith(

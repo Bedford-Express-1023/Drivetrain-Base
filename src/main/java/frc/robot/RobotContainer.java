@@ -1,17 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.Utils.SendableDouble;
-import frc.robot.commands.DriveCommand;
-import frc.robot.commands.PointTowardsHub;
-
 import frc.robot.commands.Autos.DoNothing;
+import frc.robot.commands.Drivetrain.DriveCommand;
+import frc.robot.commands.Drivetrain.LimelightTarget;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
 public class RobotContainer {
@@ -20,7 +18,7 @@ public class RobotContainer {
     public final SendableChooser<Command> autoChooser = new SendableChooser<Command>();
     public final SendableDouble autoDelay = new SendableDouble("Auto Delay"); //get working
 
-    private final PointTowardsHub pointTowardsHub = new PointTowardsHub(m_drivetrain);
+    private final LimelightTarget limelightTarget = new LimelightTarget(m_drivetrain);
     private final XboxController driverController = new XboxController(0);
     private final XboxController manipulatorController = new XboxController(1);
 
@@ -52,8 +50,6 @@ public class RobotContainer {
 
         new Button(driverController::getBButtonPressed)
                 .whenPressed(m_drivetrain::zeroGyroscope);
-        new Button(() -> driverController.getRightTriggerAxis() > 0.5)
-                .whileHeld(pointTowardsHub);
     }
 
     private static double deadband(double value, double deadband) {
