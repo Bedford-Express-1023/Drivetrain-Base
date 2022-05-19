@@ -7,12 +7,18 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class SendableDouble implements Sendable {
-    String key;
+    String key = "";
     DoubleSupplier getter;
     DoubleConsumer setter;
     double value;
     public SendableDouble(String key) {
         this.key = key;
+    }
+    
+    public SendableDouble(DoubleSupplier supplier, DoubleConsumer consumer, Double value) {
+        this.getter = supplier;
+        this.setter = consumer;
+        this.value = value;
     }
 
     public void set(double value) { 

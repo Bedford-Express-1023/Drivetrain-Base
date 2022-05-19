@@ -4,6 +4,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem.MovementTrackingTypes;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import java.util.Optional;
@@ -55,13 +56,17 @@ public class DriveCommand extends CommandBase {
                 limelightTracking ? Optional.ofNullable(null) : Optional.ofNullable(rotationPercent * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
             );
         } else {
+            ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                translationXPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+                translationYPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+                rotationPercent * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+                drivetrain.getRotation()
+            );
+
             drivetrain.setSpeeds(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            translationXPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-                            translationYPercent * drivePower * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-                            rotationPercent * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-                            drivetrain.getRotation()
-                )
+                Optional.ofNullable(speeds.vxMetersPerSecond),
+                Optional.ofNullable(speeds.vyMetersPerSecond),
+                limelightTracking ? Optional.ofNullable(null) : Optional.ofNullable(speeds.omegaRadiansPerSecond)
             );
         }
     }

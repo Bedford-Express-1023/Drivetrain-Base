@@ -11,6 +11,7 @@ import frc.robot.commands.Autos.DoNothing;
 import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Drivetrain.LimelightTarget;
 import frc.robot.subsystems.SwerveDriveSubsystem;
+import frc.robot.subsystems.SwerveDriveSubsystem.MovementTrackingTypes;
 
 public class RobotContainer {
     private final SwerveDriveSubsystem m_drivetrain = new SwerveDriveSubsystem();
@@ -51,6 +52,8 @@ public class RobotContainer {
 
         new Button(driverController::getBButtonPressed)
                 .whenPressed(m_drivetrain::zeroGyroscope);
+        new Button(() -> driverController.getLeftTriggerAxis() > 0.5)
+                .whileHeld(() -> m_drivetrain.limelightTarget(true, MovementTrackingTypes.robotSpeed));
     }
 
     private static double deadband(double value, double deadband) {

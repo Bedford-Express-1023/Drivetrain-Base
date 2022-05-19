@@ -4,6 +4,9 @@ import java.util.Optional;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import frc.robot.SwerveLib.SwerveModule;
+import frc.robot.Utils.EZEditPID;
+import frc.robot.Utils.EZEditProfiledPID;
+import frc.robot.Utils.SendableDouble;
 import frc.robot.SwerveLib.Mk4SwerveModuleHelper;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -22,6 +25,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -36,8 +40,8 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 
         public final Pigeon2 gyroscope = new Pigeon2(Constants.DRIVETRAIN_PIGEON_ID);
         public final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(0.45, 1.85, 0.000037994);
-        public final PIDController[] velocityPID = {new PIDController(0.25, 0.0, 0.0), new PIDController(0.25, 0.0, 0.0), new PIDController(0.25, 0.0, 0.0), new PIDController(0.25, 0.0, 0.0)};
-        public final ProfiledPIDController pidRot = new ProfiledPIDController(6.5, 0.0, 0.005, new TrapezoidProfile.Constraints(100, 5));
+        public final EZEditPID[] velocityPID = {new EZEditPID(0.25, 0.0, 0.0, Shuffleboard.getTab("PID"), "FLVelocity"), new EZEditPID(0.25, 0.0, 0.0, Shuffleboard.getTab("Drivetrain"), "FRVelocity"), new EZEditPID(0.25, 0.0, 0.0, Shuffleboard.getTab("Drivetrain"), "BLVelocity"), new EZEditPID(0.25, 0.0, 0.0, Shuffleboard.getTab("Drivetrain"), "BRVelocity")};
+        public final EZEditProfiledPID pidRot = new EZEditProfiledPID(4.5, 0.0, 0.005, new TrapezoidProfile.Constraints(100, 5), Shuffleboard.getTab("PID"), "FLVelocity");
         public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
                 new Translation2d(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
                 new Translation2d(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
@@ -136,7 +140,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                 vyMetersPerSecond.ifPresent((y) -> newSpeeds.vyMetersPerSecond = y);
                 omegaRadiansPerSecond.ifPresent((o) -> newSpeeds.omegaRadiansPerSecond = o);
                 this.chassisSpeeds = newSpeeds;
-                this.states = kinematics.toSwerveModuleStates(chassisSpeeds);
+                this.states = kinematics.toSwerveModuleStates(newSpeeds);
         }
         /**
         * Rotates the reference frame around the robot
@@ -181,21 +185,24 @@ public class SwerveDriveSubsystem extends SubsystemBase {
          * @param movementTrackingType 
          */
         public void limelightTarget(Boolean SWiM, MovementTrackingTypes movementTrackingType) {
-                double fudge = 1; //TODO: tune fudge1 based on ball flight speed
+                double fudge = 4; //TODO: tune fudge1 based on ball flight speed
                 //finds the speed of the robot relative to the target
                 NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
                 Translation2d targetRelativeSpeeds = getRotatedFrame(getRotation().plus(Rotation2d.fromDegrees(180 + -limelight.getEntry("tx").getDouble(0))));
                 double toAddRadians = 0;
+                SmartDashboard.putNumber("TargetRelativeX", targetRelativeSpeeds.getX());
+                SmartDashboard.putNumber("TargetRelativeY", targetRelativeSpeeds.getY());
+
                 if (movementTrackingType == MovementTrackingTypes.robotSpeed && SWiM) {
-                        toAddRadians = Math.acos(targetRelativeSpeeds.getX() / fudge);
+                        toAddRadians = -Math.PI/2 +Math.acos(targetRelativeSpeeds.getY() / fudge);
                 }
                 
                 if (movementTrackingType == MovementTrackingTypes.targetMovement && SWiM) {
-                        toAddRadians = Math.toRadians(limelight.getEntry("tx").getDouble(0) - previousLimelight) + previousRotation;
+                        toAddRadians = Math.toRadians(limelight.getEntry("tx").getDouble(0) - previousLimelight) * fudge + previousRotation;
                 }
 
+                double toRotate = pidRot.calculate(0, toAddRadians + (-limelight.getEntry("tx").getDouble(0) * Math.PI/180));
                 if (limelight.getEntry("tv").getDouble(0) == 1) {
-                        double toRotate = pidRot.calculate(0, toAddRadians + (-limelight.getEntry("tx").getDouble(0) * Math.PI/180));
                         previousRotation = toRotate;
                         previousLimelight = limelight.getEntry("tx").getDouble(0);
                         setSpeeds(Optional.ofNullable(null), Optional.ofNullable(null), Optional.ofNullable(toRotate + toAddRadians));
@@ -207,6 +214,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 
         @Override
         public void periodic() {
+                //SmartDashboard.putData(new SendableDouble(CommandVariable))
                 updateOdometry();
                 frontLeftModule.set((feedForward.calculate(states[0].speedMetersPerSecond) + velocityPID[0].calculate(frontLeftModule.getDriveVelocity(), states[0].speedMetersPerSecond)) * Math.min(Constants.SWERVE_SPEED_MULTIPLIER, 1), states[0].angle.getRadians());
                 frontRightModule.set((feedForward.calculate(states[1].speedMetersPerSecond) + velocityPID[1].calculate(frontRightModule.getDriveVelocity(), states[1].speedMetersPerSecond)) * Math.min(Constants.SWERVE_SPEED_MULTIPLIER, 1), states[1].angle.getRadians());
