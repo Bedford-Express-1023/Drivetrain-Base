@@ -5,9 +5,14 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 
+/**
+ * @author Stephen Oz
+ */
 public class SendableDouble implements Sendable {
     String key = "";
+    
     DoubleSupplier getter;
     DoubleConsumer setter;
     double value;
@@ -15,23 +20,21 @@ public class SendableDouble implements Sendable {
         this.key = key;
     }
     
-    public SendableDouble(DoubleSupplier supplier, DoubleConsumer consumer, Double value) {
+    public SendableDouble(DoubleSupplier supplier, DoubleConsumer consumer, Double value, String key) {
         this.getter = supplier;
         this.setter = consumer;
         this.value = value;
+        this.key = key;
     }
 
-    public void set(double value) { 
-        this.value = value;
-    }
-    
-    public double get() { 
-        return value;
+    public double get() {
+        return this.getter.getAsDouble();
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty(key, this::get, this::set);
+        builder.addDoubleProperty(key, getter, setter);
+        builder.setSmartDashboardType("Double");
     }
     
 }

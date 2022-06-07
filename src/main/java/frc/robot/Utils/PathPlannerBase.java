@@ -19,12 +19,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
-/** Add your docs here. */
+/**
+ * @author Stephen Oz
+ */
 public class PathPlannerBase extends PPSwerveControllerCommand {
     public SwerveDriveSubsystem drivetrain;
     public PathPlannerTrajectory trajectory;
@@ -40,9 +41,9 @@ public class PathPlannerBase extends PPSwerveControllerCommand {
             trajectory, 
             drivetrain::getRealOdometry, 
             drivetrain.kinematics, 
-            new EZEditPID(8, 0, 0.0, Shuffleboard.getTab("PID"), "PPXVel"), 
-            new EZEditPID(8, 0, 0.0, Shuffleboard.getTab("PID"), "PPYVel"), 
-            new ProfiledPIDController(8, 0.0, 0.0, new TrapezoidProfile.Constraints(5.0,6.0)), 
+            new EZEditPID(8, 0, 0.0, "PPXVel"), 
+            new EZEditPID(8, 0, 0.0, "PPYVel"), 
+            new EZEditProfiledPID(8, 0.0, 0.0, new TrapezoidProfile.Constraints(5.0,6.0), "PPRotation"), 
             (states) -> {
                     drivetrain.setStates(states);
             }, 
