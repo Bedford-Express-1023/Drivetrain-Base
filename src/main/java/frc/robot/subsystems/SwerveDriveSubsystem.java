@@ -184,10 +184,9 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         public void limelightTarget(Boolean SWiM, MovementTrackingTypes movementTrackingType) {
                 double fudge = 4; //TODO: tune fudge based on ball flight speed
                 //fudge should theoretically be set to the amount of seconds it takes for the ball to hit the target, but just tune it.
-                //may possibly need to be multiplied by acos(LimelightY + limelightMountingAngle) * initialSpeed / distance
+                //may possibly need to be multiplied by acos(LimelightY - limelightMountingAngle) * initialSpeed / distance
                 //finds the speed of the robot relative to the target
-                NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
-                Translation2d targetRelativeSpeeds = getRotatedFrame(getRotation().plus(Rotation2d.fromDegrees(180 + -limelight.getEntry("tx").getDouble(0))));
+                Translation2d targetRelativeSpeeds = getRotatedFrame(getRotation().plus(Rotation2d.fromDegrees(180 + -Limelight.tx())));
                 double toAddRadians = 0;
                 SmartDashboard.putNumber("TargetRelativeX", targetRelativeSpeeds.getX());
                 SmartDashboard.putNumber("TargetRelativeY", targetRelativeSpeeds.getY());
@@ -197,13 +196,13 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                 }
                 
                 if (movementTrackingType == MovementTrackingTypes.targetMovement && SWiM) {
-                        toAddRadians = Math.toRadians(limelight.getEntry("tx").getDouble(0) - previousLimelight) * fudge + previousRotation;
+                        toAddRadians = Math.toRadians(Limelight.tx() - previousLimelight) * fudge + previousRotation;
                 }
 
-                double toRotate = pidRot.calculate(0, toAddRadians + (-limelight.getEntry("tx").getDouble(0) * Math.PI/180));
-                if (limelight.getEntry("tv").getDouble(0) == 1) {
+                double toRotate = pidRot.calculate(0, toAddRadians + (-Limelight.tx() * Math.PI/180));
+                if (Limelight.tv()) {
                         previousRotation = toRotate;
-                        previousLimelight = limelight.getEntry("tx").getDouble(0);
+                        previousLimelight = Limelight.tx();
                         setSpeeds(Optional.ofNullable(null), Optional.ofNullable(null), Optional.ofNullable(toRotate + toAddRadians));
                 }
         }

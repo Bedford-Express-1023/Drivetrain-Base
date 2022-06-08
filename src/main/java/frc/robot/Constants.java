@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class Constants {
     //////////////////////
     //DRIVETRAIN CONSTANTS
@@ -36,4 +38,5 @@ public class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(343);
 
     public static final double TARGET_HEIGHT_ABOVE_LIMELIGHT = 0;
+    public static final Rotation2d LIMELIGHT_MOUNTING_ANGLE = Rotation2d.fromDegrees(0);
 }
