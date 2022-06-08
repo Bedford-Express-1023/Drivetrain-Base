@@ -1,17 +1,14 @@
 package frc.robot;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.Utils.EZEditPID;
 import frc.robot.Utils.SendableDouble;
-import frc.robot.commands.Autos.DoNothing;
 import frc.robot.commands.Drivetrain.DriveCommand;
-import frc.robot.commands.Drivetrain.LimelightTarget;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem.MovementTrackingTypes;
 
@@ -21,7 +18,6 @@ public class RobotContainer {
     public final SendableChooser<Command> autoChooser = new SendableChooser<Command>();
     public final SendableDouble autoDelay = new SendableDouble("Auto Delay");
 
-    private final LimelightTarget limelightTarget = new LimelightTarget(m_drivetrain);
     private final XboxController driverController = new XboxController(0);
     private final XboxController manipulatorController = new XboxController(1);
 
@@ -33,10 +29,8 @@ public class RobotContainer {
     public RobotContainer() {
         m_drivetrain.register();
 
-        autoChooser.setDefaultOption("Do Nothing", new DoNothing());
-        autoChooser.addOption("Option 1", new DoNothing());
-        autoChooser.addOption("Option 2", new DoNothing());
-        autoChooser.addOption("Option 3", new DoNothing());
+        autoChooser.setDefaultOption("Do Nothing", new WaitCommand(10));
+        autoChooser.addOption("Option 1", new WaitCommand(10));
 
         SmartDashboard.putData(autoChooser);
         SmartDashboard.putData(autoDelay);

@@ -4,11 +4,9 @@ import java.util.Optional;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import frc.robot.SwerveLib.SwerveModule;
-import frc.robot.Utils.EZEditPID;
 import frc.robot.Utils.EZEditProfiledPID;
 import frc.robot.Utils.SwervePIDSet;
 import frc.robot.SwerveLib.Mk4SwerveModuleHelper;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -171,7 +169,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                                 getRotation()
                 );
         }
-
+        
         public enum MovementTrackingTypes{
                 robotSpeed, targetMovement, none
         }
@@ -184,7 +182,9 @@ public class SwerveDriveSubsystem extends SubsystemBase {
          * @param movementTrackingType 
          */
         public void limelightTarget(Boolean SWiM, MovementTrackingTypes movementTrackingType) {
-                double fudge = 4; //TODO: tune fudge1 based on ball flight speed
+                double fudge = 4; //TODO: tune fudge based on ball flight speed
+                //fudge should theoretically be set to the amount of seconds it takes for the ball to hit the target, but just tune it.
+                //may possibly need to be multiplied by acos(LimelightY + limelightMountingAngle) * initialSpeed / distance
                 //finds the speed of the robot relative to the target
                 NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
                 Translation2d targetRelativeSpeeds = getRotatedFrame(getRotation().plus(Rotation2d.fromDegrees(180 + -limelight.getEntry("tx").getDouble(0))));
@@ -193,7 +193,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                 SmartDashboard.putNumber("TargetRelativeY", targetRelativeSpeeds.getY());
 
                 if (movementTrackingType == MovementTrackingTypes.robotSpeed && SWiM) {
-                        toAddRadians = -Math.PI/2 +Math.acos(targetRelativeSpeeds.getY() / fudge);
+                        toAddRadians = -Math.PI/2 + Math.acos(targetRelativeSpeeds.getY() / fudge);
                 }
                 
                 if (movementTrackingType == MovementTrackingTypes.targetMovement && SWiM) {
@@ -205,9 +205,6 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                         previousRotation = toRotate;
                         previousLimelight = limelight.getEntry("tx").getDouble(0);
                         setSpeeds(Optional.ofNullable(null), Optional.ofNullable(null), Optional.ofNullable(toRotate + toAddRadians));
-                }
-                if (limelight.getEntry("tx").getDouble(0) > -3 && limelight.getEntry("tx").getDouble(0) < 3 ) {
-                        setSpeeds(Optional.ofNullable(null), Optional.ofNullable(null), Optional.ofNullable(0.0));  
                 }
         }
 

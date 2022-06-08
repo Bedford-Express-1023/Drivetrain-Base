@@ -1,12 +1,6 @@
 package frc.robot.Utils;
 
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleSupplier;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,6 +14,24 @@ public class EZEditPID extends PIDController {
         super(kp, ki, kd);
         SmartDashboard.putData(name, this);
         this.name = name;
+    }
+
+    @Override
+    public void setP(double kp) {
+        SmartDashboard.putData(this);
+        super.setP(kp);
+    }
+
+    @Override
+    public void setI(double ki) {
+        SmartDashboard.putData(this);
+        super.setI(ki);
+    }
+
+    @Override
+    public void setD(double kd) {
+        SmartDashboard.putData(this);
+        super.setD(kd);
     }
 
     @Override

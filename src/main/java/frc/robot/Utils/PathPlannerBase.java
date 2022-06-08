@@ -18,7 +18,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDriveSubsystem;
@@ -54,7 +53,14 @@ public class PathPlannerBase extends PPSwerveControllerCommand {
     
     @Override
     public void initialize() {
-        drivetrain.odometry.resetPosition(new Pose2d(trajectory.getInitialPose().getTranslation().plus(new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2, -Constants.DRIVETRAIN_WHEELBASE_METERS / 2)), trajectory.getInitialPose().getRotation()), drivetrain.getRotation());
+        drivetrain.odometry.resetPosition(
+            new Pose2d(
+                trajectory.getInitialPose().getTranslation().plus(
+                    new Translation2d(
+                        -Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2, 
+                        -Constants.DRIVETRAIN_WHEELBASE_METERS / 2)),
+                trajectory.getInitialPose().getRotation()), 
+            drivetrain.getRotation());
     }
 
     @Override
