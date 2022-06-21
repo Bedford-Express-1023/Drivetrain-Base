@@ -10,7 +10,6 @@ public class Constants {
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.521;
 
     public static final double SWERVE_MAX_VOLTAGE = 12;
-    public static final double SWERVE_SPEED_MULTIPLIER = 1; //use to limit speed
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 5.25; //Literally a measure of how fast the swerves could possibly go
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
             Math.hypot(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0);

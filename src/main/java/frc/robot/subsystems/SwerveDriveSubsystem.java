@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.ctre.phoenix.sensors.Pigeon2;
 import frc.robot.SwerveLib.SwerveModule;
 import frc.robot.Utils.EZEditProfiledPID;
+import frc.robot.Utils.SendableDouble;
 import frc.robot.Utils.SwervePIDSet;
 import frc.robot.SwerveLib.Mk4SwerveModuleHelper;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -31,6 +32,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         public final SwerveModule frontRightModule;
         public final SwerveModule backLeftModule;
         public final SwerveModule backRightModule;
+        public static double speedMultiplier = 1; //use to limit speed
         public ChassisSpeeds previousSpeeds = new ChassisSpeeds(0,0,0);
         public String CommandVariable = "None";
         public SwerveModuleState[] states = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()};
@@ -194,10 +196,10 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                 if (movementTrackingType == MovementTrackingTypes.robotSpeed && SWiM) {
                         toAddRadians = -Math.PI/2 + Math.acos(targetRelativeSpeeds.getY() / fudge);
                 }
-                
+                /* probably does not work at all lol
                 if (movementTrackingType == MovementTrackingTypes.targetMovement && SWiM) {
                         toAddRadians = Math.toRadians(Limelight.tx() - previousLimelight) * fudge + previousRotation;
-                }
+                } */
 
                 double toRotate = pidRot.calculate(0, toAddRadians + (-Limelight.tx() * Math.PI/180));
                 if (Limelight.tv()) {
@@ -209,12 +211,12 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 
         @Override
         public void periodic() {
-                //SmartDashboard.putData(new SendableDouble(CommandVariable))
+                SmartDashboard.putData(new SendableDouble(() -> speedMultiplier, (double x) -> {speedMultiplier = x;}, speedMultiplier, "Swerve Speed"));
                 updateOdometry();
-                frontLeftModule.set((feedForward.calculate(states[0].speedMetersPerSecond) + velocityPID.calculate(0, frontLeftModule.getDriveVelocity(), states[0].speedMetersPerSecond)) * Math.min(Constants.SWERVE_SPEED_MULTIPLIER, 1), states[0].angle.getRadians());
-                frontRightModule.set((feedForward.calculate(states[1].speedMetersPerSecond) + velocityPID.calculate(1, frontRightModule.getDriveVelocity(), states[1].speedMetersPerSecond)) * Math.min(Constants.SWERVE_SPEED_MULTIPLIER, 1), states[1].angle.getRadians());
-                backLeftModule.set((feedForward.calculate(states[2].speedMetersPerSecond) + velocityPID.calculate(2, backLeftModule.getDriveVelocity(), states[2].speedMetersPerSecond)) * Math.min(Constants.SWERVE_SPEED_MULTIPLIER, 1), states[2].angle.getRadians()); 
-                backRightModule.set((feedForward.calculate(states[3].speedMetersPerSecond) + velocityPID.calculate(3, backRightModule.getDriveVelocity(), states[3].speedMetersPerSecond)) * Math.min(Constants.SWERVE_SPEED_MULTIPLIER, 1), states[3].angle.getRadians()); 
+                frontLeftModule.set((feedForward.calculate(states[0].speedMetersPerSecond) + velocityPID.calculate(0, frontLeftModule.getDriveVelocity(), states[0].speedMetersPerSecond)) * Math.min(speedMultiplier, 1), states[0].angle.getRadians());
+                frontRightModule.set((feedForward.calculate(states[1].speedMetersPerSecond) + velocityPID.calculate(1, frontRightModule.getDriveVelocity(), states[1].speedMetersPerSecond)) * Math.min(speedMultiplier, 1), states[1].angle.getRadians());
+                backLeftModule.set((feedForward.calculate(states[2].speedMetersPerSecond) + velocityPID.calculate(2, backLeftModule.getDriveVelocity(), states[2].speedMetersPerSecond)) * Math.min(speedMultiplier, 1), states[2].angle.getRadians()); 
+                backRightModule.set((feedForward.calculate(states[3].speedMetersPerSecond) + velocityPID.calculate(3, backRightModule.getDriveVelocity(), states[3].speedMetersPerSecond)) * Math.min(speedMultiplier, 1), states[3].angle.getRadians()); 
         }
 }
 //Eric Koenemann was here!
