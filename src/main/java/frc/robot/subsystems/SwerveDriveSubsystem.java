@@ -201,11 +201,11 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                         toAddRadians = Math.toRadians(Limelight.tx() - previousLimelight) * fudge + previousRotation;
                 } */
 
-                double toRotate = pidRot.calculate(0, toAddRadians + (-Limelight.tx() * Math.PI/180));
+                double toRotateRadians = pidRot.calculate(0, -Limelight.tx() * Math.PI/180);
                 if (Limelight.tv()) {
-                        previousRotation = toRotate;
+                        previousRotation = toRotateRadians;
                         previousLimelight = Limelight.tx();
-                        setSpeeds(Optional.ofNullable(null), Optional.ofNullable(null), Optional.ofNullable(toRotate + toAddRadians));
+                        setSpeeds(Optional.ofNullable(null), Optional.ofNullable(null), Optional.ofNullable(toRotateRadians + toAddRadians));
                 }
         }
 
